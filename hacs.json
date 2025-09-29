@@ -3,6 +3,5 @@
   "description": "Integracja Home Assistant dla danych o cenach energii TGE/ENEA z taryfy dynamicznej RDN",
   "country": ["PL"],
   "render_readme": true,
-  "zip_release": true,
-  "filename": "v1.0.0.zip"
+  "zip_release": false
 }
