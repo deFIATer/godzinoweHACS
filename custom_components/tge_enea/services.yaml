@@ -1,0 +1,20 @@
+"""Services for TGE ENEA integration."""
+import voluptuous as vol
+
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import config_validation as cv
+
+from .const import DOMAIN, SERVICE_UPDATE_PRICES, SERVICE_GET_CHEAP_HOURS
+
+# Service schemas
+SERVICE_GET_CHEAP_HOURS_SCHEMA = vol.Schema(
+    {
+        vol.Optional("hours_needed", default=1): cv.positive_int,
+        vol.Optional("date"): cv.date_string,
+    }
+)
+
+SERVICE_SCHEMAS = {
+    SERVICE_UPDATE_PRICES: vol.Schema({}),
+    SERVICE_GET_CHEAP_HOURS: SERVICE_GET_CHEAP_HOURS_SCHEMA,
+}
