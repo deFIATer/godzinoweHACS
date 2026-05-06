@@ -1,0 +1,127 @@
+title: Ceny dzis
+path: ceny-dzis
+icon: mdi:calendar-today
+panel: true
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.aktualna_cena_z_taryfa
+            name: Cena teraz
+            icon: mdi:flash
+          - type: entity
+            entity: sensor.klasyfikacja_ceny
+            name: Klasyfikacja
+            icon: mdi:tag-outline
+          - type: entity
+            entity: sensor.liczba_tanich_godzin_dzis
+            name: Tanie godziny
+            icon: mdi:clock-check-outline
+          - type: entity
+            entity: sensor.liczba_drogich_godzin_dzis
+            name: Drogie godziny
+            icon: mdi:clock-alert-outline
+
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Ceny energii - dzisiaj
+          show_states: true
+        graph_span: 24h
+        span:
+          start: day
+        now:
+          show: true
+          label: Teraz
+          color: "#38bdf8"
+        experimental:
+          color_threshold: true
+        apex_config:
+          chart:
+            height: 560
+            toolbar:
+              show: true
+            zoom:
+              enabled: true
+          grid:
+            borderColor: "#334155"
+            strokeDashArray: 4
+          legend:
+            show: true
+            position: bottom
+          stroke:
+            curve: stepline
+            width: 5
+            lineCap: round
+          markers:
+            size: 0
+            hover:
+              size: 6
+          dataLabels:
+            enabled: false
+          yaxis:
+            decimalsInFloat: 2
+            title:
+              text: zl/kWh
+          xaxis:
+            labels:
+              datetimeUTC: false
+              format: HH:mm
+          annotations:
+            yaxis:
+              - y: 0.35
+                borderColor: "#22c55e"
+                strokeDashArray: 5
+                label:
+                  text: Niskie ceny
+                  style:
+                    background: "#22c55e"
+                    color: "#ffffff"
+              - y: 0.55
+                borderColor: "#f97316"
+                strokeDashArray: 5
+                label:
+                  text: Wysokie ceny
+                  style:
+                    background: "#f97316"
+                    color: "#ffffff"
+        series:
+          - entity: sensor.plan_cen_dzis
+            name: Cena dzis
+            type: line
+            color_threshold:
+              - value: -999
+                color: "#38bdf8"
+              - value: 0.15
+                color: "#22c55e"
+              - value: 0.35
+                color: "#eab308"
+              - value: 0.55
+                color: "#f97316"
+              - value: 0.75
+                color: "#ef4444"
+            data_generator: |
+              const records = entity.attributes.records || [];
+              const date = entity.attributes.date;
+              return records
+                .filter((record) => record.total_price !== undefined && record.total_price !== null)
+                .map((record) => {
+                  const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+                  return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+                });
+
+      - type: markdown
+        title: Godziny dzisiaj
+        content: |
+          **Tanie godziny:** {{ state_attr('sensor.plan_cen_dzis', 'cheap_hours') | join(', ') }}
+
+          **Drogie godziny:** {{ state_attr('sensor.plan_cen_dzis', 'expensive_hours') | join(', ') }}
+
+          {% set cheapest = state_attr('sensor.plan_cen_dzis', 'cheapest_hours') %}
+          {% if cheapest %}
+          **Najtansza godzina:** {{ cheapest[0].hour }} - {{ cheapest[0].total_price }} zl/kWh
+          {% else %}
+          **Najtansza godzina:** brak danych
+          {% endif %}
