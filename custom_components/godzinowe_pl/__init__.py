@@ -1,4 +1,4 @@
-"""The TGE ENEA integration."""
+"""The godzinowe.pl integration."""
 import logging
 from datetime import timedelta
 
@@ -13,7 +13,7 @@ from .const import (
     SERVICE_UPDATE_PRICES,
     SERVICE_GET_CHEAP_HOURS,
 )
-from .coordinator import TGEEneaDataUpdateCoordinator
+from .coordinator import GodzinowePLDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,16 +21,17 @@ PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up TGE ENEA from a config entry."""
-    _LOGGER.debug("Setting up TGE ENEA integration")
+    """Set up godzinowe.pl from a config entry."""
+    _LOGGER.debug("Setting up godzinowe.pl integration")
 
     # Create data update coordinator
-    coordinator = TGEEneaDataUpdateCoordinator(
+    coordinator = GodzinowePLDataUpdateCoordinator(
         hass,
         _LOGGER,
         name=DOMAIN,
         update_interval=timedelta(seconds=UPDATE_INTERVAL_CURRENT),
-        api_url=entry.data.get("api_url", "https://godzinowe.pl/api"),
+        api_url=entry.data.get("api_url", "https://godzinowe.pl/api.php"),
+        options=entry.options,
     )
 
     # Fetch initial data
@@ -43,6 +44,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Setup platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
+
     # Register services
     await _async_register_services(hass, coordinator)
 
@@ -51,19 +54,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    _LOGGER.debug("Unloading TGE ENEA integration")
+    _LOGGER.debug("Unloading godzinowe.pl integration")
 
     # Unload platforms
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
+        coordinator = hass.data[DOMAIN].pop(entry.entry_id)
+        await coordinator.async_close()
 
     return unload_ok
 
 
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle options update."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
 async def _async_register_services(
-    hass: HomeAssistant, coordinator: TGEEneaDataUpdateCoordinator
+    hass: HomeAssistant, coordinator: GodzinowePLDataUpdateCoordinator
 ) -> None:
     """Register services for the integration."""
 

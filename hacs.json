@@ -1,6 +1,6 @@
 {
-  "name": "TGE ENEA - Godzinowe Ceny Energii",
-  "description": "Integracja Home Assistant dla danych o cenach energii TGE/ENEA z taryfy dynamicznej RDN",
+  "name": "godzinowe.pl - Godzinowe Ceny Energii",
+  "description": "Integracja Home Assistant dla godzinowych cen energii z API godzinowe.pl",
   "country": ["PL"],
   "render_readme": true,
   "zip_release": false

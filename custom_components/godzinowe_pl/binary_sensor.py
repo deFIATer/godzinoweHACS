@@ -1,4 +1,4 @@
-"""Binary sensor platform for TGE ENEA integration."""
+"""Binary sensor platform for godzinowe.pl integration."""
 from __future__ import annotations
 
 import logging
@@ -18,11 +18,11 @@ from .const import (
     BINARY_SENSOR_TYPES,
     ATTR_CURRENT_HOUR_RANGE,
     ATTR_DATE,
-    ATTR_CLASSIFICATION_ENEA,
+    ATTR_CLASSIFICATION,
     ATTR_CHEAP_HOURS,
     ATTR_EXPENSIVE_HOURS,
 )
-from .coordinator import TGEEneaDataUpdateCoordinator
+from .coordinator import GodzinowePLDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,22 +32,22 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up TGE ENEA binary sensor based on a config entry."""
+    """Set up godzinowe.pl binary sensor based on a config entry."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
     entities = []
     for sensor_type in BINARY_SENSOR_TYPES:
-        entities.append(TGEEneaBinarySensor(coordinator, sensor_type))
+        entities.append(GodzinowePLBinarySensor(coordinator, sensor_type))
 
     async_add_entities(entities, True)
 
 
-class TGEEneaBinarySensor(CoordinatorEntity, BinarySensorEntity):
-    """Representation of a TGE ENEA binary sensor."""
+class GodzinowePLBinarySensor(CoordinatorEntity, BinarySensorEntity):
+    """Representation of a godzinowe.pl binary sensor."""
 
     def __init__(
         self,
-        coordinator: TGEEneaDataUpdateCoordinator,
+        coordinator: GodzinowePLDataUpdateCoordinator,
         sensor_type: str,
     ) -> None:
         """Initialize the binary sensor."""
@@ -90,12 +90,17 @@ class TGEEneaBinarySensor(CoordinatorEntity, BinarySensorEntity):
         if current_data:
             attributes[ATTR_CURRENT_HOUR_RANGE] = current_data.get("current_hour_range")
             attributes[ATTR_DATE] = current_data.get("date")
-            attributes[ATTR_CLASSIFICATION_ENEA] = current_data.get("classification_enea")
-            attributes["current_price"] = current_data.get("price_per_kwh_enea")
+            attributes[ATTR_CLASSIFICATION] = current_data.get("classification")
+            attributes["current_price"] = current_data.get("price_per_kwh")
+            attributes["current_total_price"] = current_data.get("total_price")
+            attributes["market_price_gross"] = current_data.get("market_price_gross")
+            attributes["tariff_rate"] = current_data.get("tariff_rate")
         
         # Add cheap/expensive hours for context
         attributes[ATTR_CHEAP_HOURS] = self.coordinator.cheap_hours_today
         attributes[ATTR_EXPENSIVE_HOURS] = self.coordinator.expensive_hours_today
+        attributes["cheap_hours_tomorrow"] = self.coordinator.cheap_hours_tomorrow
+        attributes["expensive_hours_tomorrow"] = self.coordinator.expensive_hours_tomorrow
         
         return attributes
 

@@ -1,0 +1,44 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "godzinowe.pl",
+        "description": "Enter the godzinowe.pl API URL.",
+        "data": {
+          "api_url": "API URL"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the API",
+      "invalid_api": "The API returned an invalid response",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This integration is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Tariff components",
+        "description": "Enter rates in PLN/kWh. Tariff price = API market price × multiplier + hourly distribution + fixed surcharge.",
+        "data": {
+          "tariff_type": "Tariff type",
+          "market_vat_multiplier": "Market price multiplier",
+          "fixed_rate": "Fixed surcharge",
+          "g11_distribution_rate": "G11 distribution",
+          "g12_day_distribution_rate": "G12 day distribution",
+          "g12_night_distribution_rate": "G12 night distribution",
+          "g13_morning_peak_distribution_rate": "G13 morning peak distribution",
+          "g13_afternoon_peak_distribution_rate": "G13 afternoon peak distribution",
+          "g13_offpeak_distribution_rate": "G13 off-peak distribution",
+          "g12_day_start": "Day zone start",
+          "g12_day_end": "Day zone end",
+          "g12_night_start": "Night zone start",
+          "g12_night_end": "Night zone end"
+        }
+      }
+    }
+  }
+}

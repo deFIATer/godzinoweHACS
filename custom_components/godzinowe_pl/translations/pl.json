@@ -1,0 +1,44 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "godzinowe.pl",
+        "description": "Podaj adres API godzinowe.pl.",
+        "data": {
+          "api_url": "Adres API"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z API",
+      "invalid_api": "API zwróciło nieprawidłową odpowiedź",
+      "unknown": "Nieoczekiwany błąd"
+    },
+    "abort": {
+      "already_configured": "Ta integracja jest już skonfigurowana"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Składniki taryfy",
+        "description": "Wpisz stawki w zł/kWh. Cena z taryfą = cena rynkowa z API × mnożnik + dystrybucja dla godziny + stała dopłata.",
+        "data": {
+          "tariff_type": "Typ taryfy",
+          "market_vat_multiplier": "Mnożnik ceny rynkowej",
+          "fixed_rate": "Stała dopłata",
+          "g11_distribution_rate": "Dystrybucja G11",
+          "g12_day_distribution_rate": "Dystrybucja G12 dzień",
+          "g12_night_distribution_rate": "Dystrybucja G12 noc",
+          "g13_morning_peak_distribution_rate": "Dystrybucja G13 szczyt przedpołudniowy",
+          "g13_afternoon_peak_distribution_rate": "Dystrybucja G13 szczyt popołudniowy",
+          "g13_offpeak_distribution_rate": "Dystrybucja G13 pozostałe godziny",
+          "g12_day_start": "Początek strefy dziennej",
+          "g12_day_end": "Koniec strefy dziennej",
+          "g12_night_start": "Początek strefy nocnej",
+          "g12_night_end": "Koniec strefy nocnej"
+        }
+      }
+    }
+  }
+}
