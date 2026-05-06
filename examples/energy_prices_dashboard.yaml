@@ -1,7 +1,7 @@
 title: Ceny energii
 views:
   - title: Energia
-    path: energia
+    path: ceny-energii
     icon: mdi:transmission-tower
     cards:
       - type: entities

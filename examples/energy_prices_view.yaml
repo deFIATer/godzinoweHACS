@@ -1,0 +1,139 @@
+title: Ceny energii
+path: ceny-energii
+icon: mdi:transmission-tower
+cards:
+  - type: entities
+    title: Teraz
+    show_header_toggle: false
+    entities:
+      - entity: sensor.aktualna_cena_z_taryfa
+        name: Cena z taryfa
+      - entity: sensor.aktualna_cena_rynkowa
+        name: Cena rynkowa
+      - entity: sensor.klasyfikacja_ceny
+        name: Klasyfikacja
+      - entity: binary_sensor.energia_tania
+        name: Energia tania
+      - entity: binary_sensor.energia_droga
+        name: Energia droga
+
+  - type: custom:apexcharts-card
+    header:
+      show: true
+      title: Ceny godzinowe dzisiaj
+      show_states: true
+    graph_span: 24h
+    span:
+      start: day
+    now:
+      show: true
+      label: Teraz
+    apex_config:
+      chart:
+        height: 320
+      plotOptions:
+        bar:
+          columnWidth: 75%
+      yaxis:
+        decimalsInFloat: 2
+        title:
+          text: zl/kWh
+      xaxis:
+        labels:
+          datetimeUTC: false
+    series:
+      - entity: sensor.plan_cen_dzis
+        name: Cena z taryfa
+        type: column
+        color: "#2f80ed"
+        data_generator: |
+          const records = entity.attributes.records || [];
+          const date = entity.attributes.date;
+          return records
+            .filter((record) => record.total_price !== undefined && record.total_price !== null)
+            .map((record) => {
+              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+            });
+      - entity: sensor.plan_cen_dzis
+        name: Cena rynkowa
+        type: line
+        color: "#27ae60"
+        stroke_width: 3
+        data_generator: |
+          const records = entity.attributes.records || [];
+          const date = entity.attributes.date;
+          return records
+            .filter((record) => record.price_per_kwh !== undefined && record.price_per_kwh !== null)
+            .map((record) => {
+              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.price_per_kwh)];
+            });
+
+  - type: custom:apexcharts-card
+    header:
+      show: true
+      title: Ceny godzinowe jutro
+      show_states: true
+    graph_span: 24h
+    span:
+      start: day
+      offset: +1d
+    apex_config:
+      chart:
+        height: 320
+      plotOptions:
+        bar:
+          columnWidth: 75%
+      yaxis:
+        decimalsInFloat: 2
+        title:
+          text: zl/kWh
+      xaxis:
+        labels:
+          datetimeUTC: false
+    series:
+      - entity: sensor.plan_cen_jutro
+        name: Cena z taryfa
+        type: column
+        color: "#9b51e0"
+        data_generator: |
+          const records = entity.attributes.records || [];
+          const date = entity.attributes.date;
+          return records
+            .filter((record) => record.total_price !== undefined && record.total_price !== null)
+            .map((record) => {
+              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+            });
+      - entity: sensor.plan_cen_jutro
+        name: Cena rynkowa
+        type: line
+        color: "#f2994a"
+        stroke_width: 3
+        data_generator: |
+          const records = entity.attributes.records || [];
+          const date = entity.attributes.date;
+          return records
+            .filter((record) => record.price_per_kwh !== undefined && record.price_per_kwh !== null)
+            .map((record) => {
+              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.price_per_kwh)];
+            });
+
+  - type: markdown
+    title: Najlepsze godziny
+    content: |
+      **Dzis tanie godziny:**
+      {{ state_attr('sensor.plan_cen_dzis', 'cheap_hours') | join(', ') }}
+
+      **Jutro tanie godziny:**
+      {{ state_attr('sensor.plan_cen_jutro', 'cheap_hours') | join(', ') }}
+
+      **Najtansza jutro:**
+      {% set h = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
+      {% if h %}
+      {{ h[0].hour }} - {{ h[0].total_price }} zl/kWh
+      {% else %}
+      Brak danych
+      {% endif %}

@@ -86,9 +86,14 @@ data:
 
 Gotowe przykłady Lovelace YAML znajdują się w katalogu [`examples`](examples/).
 
-- [`examples/energy_prices_dashboard.yaml`](examples/energy_prices_dashboard.yaml) - dashboard z aktualną ceną, wykresem godzinowym na dziś i jutro oraz listą tanich godzin.
+- [`examples/energy_prices_view.yaml`](examples/energy_prices_view.yaml) - pojedynczy widok do wklejenia w edytorze YAML widoku.
+- [`examples/energy_prices_dashboard.yaml`](examples/energy_prices_dashboard.yaml) - pełna konfiguracja dashboardu do wklejenia w surowej konfiguracji dashboardu.
 
 Do wykresów godzinowych wymagany jest `apexcharts-card`, który można zainstalować przez HACS jako kartę frontendową. Zwykła karta historii Home Assistant pokazuje historię stanów encji, ale nie narysuje pełnego planu dnia z atrybutu `records`.
+
+Jeśli edytujesz konkretny widok w Home Assistant, użyj pliku `energy_prices_view.yaml`. Jeśli wklejasz konfigurację całego dashboardu przez Raw configuration editor, użyj `energy_prices_dashboard.yaml`.
+
+Pole `path` jest adresem URL widoku i musi być unikalne w ramach dashboardu. Jeśli Home Assistant pokazuje błąd, że widok z tym samym adresem URL już istnieje, zmień np. `path: ceny-energii` na inną wartość albo usuń/zmień stary widok z takim samym adresem.
 
 ## 🏠 Przykłady automatyzacji
 
