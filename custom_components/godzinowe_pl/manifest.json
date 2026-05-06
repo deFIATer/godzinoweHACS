@@ -1,7 +1,7 @@
 {
   "domain": "godzinowe_pl",
   "name": "godzinowe.pl - Godzinowe Ceny Energii",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "documentation": "https://github.com/deFIATer/godzinoweHACS",
   "issue_tracker": "https://github.com/deFIATer/godzinoweHACS/issues",
   "dependencies": [],
