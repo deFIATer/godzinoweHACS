@@ -82,6 +82,14 @@ data:
   date: "2025-09-30"
 ```
 
+## 📊 Przykłady dashboardów
+
+Gotowe przykłady Lovelace YAML znajdują się w katalogu [`examples`](examples/).
+
+- [`examples/energy_prices_dashboard.yaml`](examples/energy_prices_dashboard.yaml) - dashboard z aktualną ceną, wykresem godzinowym na dziś i jutro oraz listą tanich godzin.
+
+Do wykresów godzinowych wymagany jest `apexcharts-card`, który można zainstalować przez HACS jako kartę frontendową. Zwykła karta historii Home Assistant pokazuje historię stanów encji, ale nie narysuje pełnego planu dnia z atrybutu `records`.
+
 ## 🏠 Przykłady automatyzacji
 
 ### Powiadomienie o taniej energii
