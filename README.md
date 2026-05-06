@@ -87,6 +87,7 @@ data:
 Gotowe przykłady Lovelace YAML znajdują się w katalogu [`examples`](examples/).
 
 - [`examples/energy_prices_view.yaml`](examples/energy_prices_view.yaml) - pojedynczy widok do wklejenia w edytorze YAML widoku.
+- [`examples/energy_prices_wide_view.yaml`](examples/energy_prices_wide_view.yaml) - szeroki widok `panel: true` z wykresem 48h.
 - [`examples/energy_prices_dashboard.yaml`](examples/energy_prices_dashboard.yaml) - pełna konfiguracja dashboardu do wklejenia w surowej konfiguracji dashboardu.
 
 Do wykresów godzinowych wymagany jest `apexcharts-card`, który można zainstalować przez HACS jako kartę frontendową. Zwykła karta historii Home Assistant pokazuje historię stanów encji, ale nie narysuje pełnego planu dnia z atrybutu `records`.
