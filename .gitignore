@@ -1,0 +1,40 @@
+# macOS
+.DS_Store
+__MACOSX/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Home Assistant local/runtime files
+.storage/
+deps/
+tts/
+home-assistant.log*
+home-assistant_v2.db*
+*.db-shm
+*.db-wal
+
+# Build and release artifacts
+build/
+dist/
+*.egg-info/
+*.tar.gz
+*.zip
+
+# Local environments and editor files
+.venv/
+venv/
+env/
+.env
+.env.*
+.idea/
+.vscode/
+*.swp
+*.swo
