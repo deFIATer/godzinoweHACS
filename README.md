@@ -39,16 +39,16 @@ Integracja automatycznie pobiera aktualną godzinę, cały dzień dzisiejszy i d
 ## 📊 Sensory
 
 ### Główne sensory:
-- `sensor.godzinowe_pl_aktualna_cena_rynkowa` - Aktualna czysta cena rynkowa z API (zł/kWh)
-- `sensor.godzinowe_pl_aktualna_cena_z_taryfa` - Aktualna cena po doliczeniu Twoich opcji taryfowych (zł/kWh)
-- `sensor.godzinowe_pl_klasyfikacja_ceny` - Klasyfikacja ceny (UJEMNA/ZERO/BARDZO NISKA/NISKA/ŚREDNIA/WYSOKA/BARDZO WYSOKA/EKSTREMALNA)
-- `sensor.godzinowe_pl_cena_tge` - Cena TGE (zł/kWh)
-- `sensor.godzinowe_pl_liczba_tanich_godzin` - Ile jest tanich godzin dziś
-- `sensor.godzinowe_pl_liczba_drogich_godzin` - Ile jest drogich godzin dziś
-- `sensor.godzinowe_pl_liczba_tanich_godzin_jutro` - Ile jest tanich godzin jutro
-- `sensor.godzinowe_pl_liczba_drogich_godzin_jutro` - Ile jest drogich godzin jutro
-- `sensor.godzinowe_pl_plan_cen_dzis` - Pełny plan godzinowy dla dziś w atrybucie `records`
-- `sensor.godzinowe_pl_plan_cen_jutro` - Pełny plan godzinowy dla jutra w atrybucie `records`
+- `sensor.aktualna_cena_rynkowa` - Aktualna czysta cena rynkowa z API (zł/kWh)
+- `sensor.aktualna_cena_z_taryfa` - Aktualna cena po doliczeniu Twoich opcji taryfowych (zł/kWh)
+- `sensor.klasyfikacja_ceny` - Klasyfikacja ceny (UJEMNA/ZERO/BARDZO NISKA/NISKA/ŚREDNIA/WYSOKA/BARDZO WYSOKA/EKSTREMALNA)
+- `sensor.cena_tge` - Cena TGE (zł/kWh)
+- `sensor.liczba_tanich_godzin_dzis` - Ile jest tanich godzin dziś
+- `sensor.liczba_drogich_godzin_dzis` - Ile jest drogich godzin dziś
+- `sensor.liczba_tanich_godzin_jutro` - Ile jest tanich godzin jutro
+- `sensor.liczba_drogich_godzin_jutro` - Ile jest drogich godzin jutro
+- `sensor.plan_cen_dzis` - Pełny plan godzinowy dla dziś w atrybucie `records`
+- `sensor.plan_cen_jutro` - Pełny plan godzinowy dla jutra w atrybucie `records`
 
 Sensory planu dnia mają przydatne atrybuty:
 - `records` - wszystkie godziny z `price_per_kwh`, `classification`, `market_price_gross`, `tariff_rate`, `total_price`
@@ -59,8 +59,8 @@ Sensory planu dnia mają przydatne atrybuty:
 - `completeness` - kompletność danych z API
 
 ### Sensory binarne:
-- `binary_sensor.godzinowe_pl_energia_tania` - Czy energia jest teraz tania
-- `binary_sensor.godzinowe_pl_energia_droga` - Czy energia jest teraz droga
+- `binary_sensor.energia_tania` - Czy energia jest teraz tania
+- `binary_sensor.energia_droga` - Czy energia jest teraz droga
 
 ## 🛠️ Usługi (Services)
 
@@ -98,13 +98,13 @@ automation:
   - alias: "Powiadomienie - Energia tania"
     trigger:
       - platform: state
-        entity_id: binary_sensor.godzinowe_pl_energia_tania
+        entity_id: binary_sensor.energia_tania
         to: 'on'
     action:
       - service: notify.mobile_app_twoj_telefon
         data:
           title: "💡 Energia jest tania!"
-          message: "Aktualna cena z taryfą: {{ states('sensor.godzinowe_pl_aktualna_cena_z_taryfa') }} zł/kWh"
+          message: "Aktualna cena z taryfą: {{ states('sensor.aktualna_cena_z_taryfa') }} zł/kWh"
 ```
 
 ### Włączanie bojlera gdy energia tania
@@ -113,7 +113,7 @@ automation:
   - alias: "Bojler - włącz gdy tania energia"
     trigger:
       - platform: state
-        entity_id: binary_sensor.godzinowe_pl_energia_tania
+        entity_id: binary_sensor.energia_tania
         to: 'on'
     condition:
       - condition: time
@@ -143,11 +143,11 @@ template:
   - sensor:
       - name: "Najtańsza godzina jutro"
         state: >
-          {% set h = state_attr('sensor.godzinowe_pl_plan_cen_jutro', 'cheapest_hours') %}
+          {% set h = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
           {{ h[0].hour if h else 'brak danych' }}
         attributes:
           total_price: >
-            {% set h = state_attr('sensor.godzinowe_pl_plan_cen_jutro', 'cheapest_hours') %}
+            {% set h = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
             {{ h[0].total_price if h else none }}
 ```
 
