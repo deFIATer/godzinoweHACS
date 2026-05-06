@@ -19,10 +19,10 @@ cards:
             entity: sensor.liczba_drogich_godzin_jutro
             name: Drogie godziny
             icon: mdi:clock-alert-outline
-          - type: entity
-            entity: sensor.aktualna_cena_z_taryfa
-            name: Cena teraz
-            icon: mdi:flash
+          - type: markdown
+            title: Cena teraz
+            content: |
+              ## {{ '%.2f' | format(states('sensor.aktualna_cena_z_taryfa') | float(0)) }} zl/kWh
 
       - type: custom:apexcharts-card
         header:
@@ -58,8 +58,19 @@ cards:
               size: 6
           dataLabels:
             enabled: false
+          tooltip:
+            "y":
+              formatter: |
+                EVAL:function(value) {
+                  return Number(value).toFixed(2) + " zl/kWh";
+                }
           yaxis:
             decimalsInFloat: 2
+            labels:
+              formatter: |
+                EVAL:function(value) {
+                  return Number(value).toFixed(2);
+                }
             title:
               text: zl/kWh
           xaxis:
@@ -118,7 +129,7 @@ cards:
 
           {% set cheapest = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
           {% if cheapest %}
-          **Najtansza godzina:** {{ cheapest[0].hour }} - {{ cheapest[0].total_price }} zl/kWh
+          **Najtansza godzina:** {{ cheapest[0].hour }} - {{ '%.2f' | format(cheapest[0].total_price | float) }} zl/kWh
           {% else %}
           **Najtansza godzina:** brak danych
           {% endif %}

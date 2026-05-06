@@ -34,8 +34,19 @@ cards:
       plotOptions:
         bar:
           columnWidth: 75%
+      tooltip:
+        "y":
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2) + " zl/kWh";
+            }
       yaxis:
         decimalsInFloat: 2
+        labels:
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2);
+            }
         title:
           text: zl/kWh
       xaxis:
@@ -85,8 +96,19 @@ cards:
       plotOptions:
         bar:
           columnWidth: 75%
+      tooltip:
+        "y":
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2) + " zl/kWh";
+            }
       yaxis:
         decimalsInFloat: 2
+        labels:
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2);
+            }
         title:
           text: zl/kWh
       xaxis:
@@ -133,7 +155,7 @@ cards:
       **Najtansza jutro:**
       {% set h = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
       {% if h %}
-      {{ h[0].hour }} - {{ h[0].total_price }} zl/kWh
+      {{ h[0].hour }} - {{ '%.2f' | format(h[0].total_price | float) }} zl/kWh
       {% else %}
       Brak danych
       {% endif %}
