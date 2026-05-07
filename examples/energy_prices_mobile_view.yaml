@@ -1,0 +1,266 @@
+title: Ceny mobile
+path: ceny-mobile
+icon: mdi:cellphone
+cards:
+  - type: markdown
+    title: Teraz
+    content: |
+      ## {{ '%.2f' | format(states('sensor.aktualna_cena_z_taryfa') | float(0)) }} zl/kWh
+
+      **Klasyfikacja:** {{ states('sensor.klasyfikacja_ceny') }}
+
+  - type: horizontal-stack
+    cards:
+      - type: entity
+        entity: sensor.liczba_tanich_godzin_dzis
+        name: Tanie dzis
+        icon: mdi:clock-check-outline
+      - type: entity
+        entity: sensor.liczba_tanich_godzin_jutro
+        name: Tanie jutro
+        icon: mdi:calendar-arrow-right
+
+  - type: custom:apexcharts-card
+    header:
+      show: true
+      title: Dzisiaj
+      show_states: false
+    graph_span: 24h
+    span:
+      start: day
+    now:
+      show: true
+      label: Teraz
+      color: "#38bdf8"
+    experimental:
+      color_threshold: true
+    apex_config:
+      chart:
+        height: 300
+        toolbar:
+          show: false
+      grid:
+        borderColor: "#334155"
+        strokeDashArray: 4
+      legend:
+        show: false
+      stroke:
+        curve: stepline
+        width: 4
+        lineCap: round
+      markers:
+        size: 0
+      dataLabels:
+        enabled: false
+      tooltip:
+        "y":
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2) + " zl/kWh";
+            }
+      yaxis:
+        decimalsInFloat: 2
+        labels:
+          formatter: |
+            EVAL:function(value) {
+              return Number(value).toFixed(2);
+            }
+        title:
+          text: zl/kWh
+      xaxis:
+        labels:
+          datetimeUTC: false
+          format: HH:mm
+      annotations:
+        yaxis:
+          - y: 0.35
+            borderColor: "#22c55e"
+            strokeDashArray: 5
+          - y: 0.55
+            borderColor: "#f97316"
+            strokeDashArray: 5
+    series:
+      - entity: sensor.plan_cen_dzis
+        name: Cena dzis
+        type: line
+        color_threshold:
+          - value: -999
+            color: "#38bdf8"
+          - value: 0.15
+            color: "#22c55e"
+          - value: 0.35
+            color: "#eab308"
+          - value: 0.55
+            color: "#f97316"
+          - value: 0.75
+            color: "#ef4444"
+        data_generator: |
+          const records = entity.attributes.records || [];
+          const date = entity.attributes.date;
+          return records
+            .filter((record) => record.total_price !== undefined && record.total_price !== null)
+            .map((record) => {
+              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+            });
+
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state_not: available
+    card:
+      type: markdown
+      title: Jutro
+      content: |
+        Dane na jutro nie sa jeszcze dostepne.
+
+        Poczekaj do godziny **12:00** - wtedy powinny sie pojawic.
+
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state: available
+    card:
+      type: custom:apexcharts-card
+      header:
+        show: true
+        title: Jutro
+        show_states: false
+      graph_span: 24h
+      span:
+        start: day
+        offset: +1d
+      experimental:
+        color_threshold: true
+      apex_config:
+        chart:
+          height: 300
+          toolbar:
+            show: false
+        grid:
+          borderColor: "#334155"
+          strokeDashArray: 4
+        legend:
+          show: false
+        stroke:
+          curve: stepline
+          width: 4
+          lineCap: round
+        markers:
+          size: 0
+        dataLabels:
+          enabled: false
+        tooltip:
+          "y":
+            formatter: |
+              EVAL:function(value) {
+                return Number(value).toFixed(2) + " zl/kWh";
+              }
+        yaxis:
+          decimalsInFloat: 2
+          labels:
+            formatter: |
+              EVAL:function(value) {
+                return Number(value).toFixed(2);
+              }
+          title:
+            text: zl/kWh
+        xaxis:
+          labels:
+            datetimeUTC: false
+            format: HH:mm
+        annotations:
+          yaxis:
+            - y: 0.35
+              borderColor: "#22c55e"
+              strokeDashArray: 5
+            - y: 0.55
+              borderColor: "#f97316"
+              strokeDashArray: 5
+      series:
+        - entity: sensor.plan_cen_jutro
+          name: Cena jutro
+          type: line
+          color_threshold:
+            - value: -999
+              color: "#38bdf8"
+            - value: 0.15
+              color: "#22c55e"
+            - value: 0.35
+              color: "#eab308"
+            - value: 0.55
+              color: "#f97316"
+            - value: 0.75
+              color: "#ef4444"
+          data_generator: |
+            const records = entity.attributes.records || [];
+            const date = entity.attributes.date;
+            return records
+              .filter((record) => record.total_price !== undefined && record.total_price !== null)
+              .map((record) => {
+                const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+                return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+              });
+
+  - type: markdown
+    title: Dzisiaj - podsumowanie
+    content: |
+      {% set stats = state_attr('sensor.plan_cen_dzis', 'total_price_statistics') or {} %}
+      {% set cheapest = state_attr('sensor.plan_cen_dzis', 'cheapest_hours') or [] %}
+      {% set expensive = state_attr('sensor.plan_cen_dzis', 'most_expensive_hours') or [] %}
+
+      **Minimum:** {{ '%.2f' | format(stats.min_price | float(0)) }} zl/kWh
+      **Srednia:** {{ '%.2f' | format(stats.avg_price | float(0)) }} zl/kWh
+      **Maksimum:** {{ '%.2f' | format(stats.max_price | float(0)) }} zl/kWh
+
+      **Najtansze godziny:**
+      {% if cheapest %}
+      {% for hour in cheapest %}
+      - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+      {% endfor %}
+      {% else %}
+      - Brak danych
+      {% endif %}
+
+      **Najdrozsze godziny:**
+      {% if expensive %}
+      {% for hour in expensive %}
+      - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+      {% endfor %}
+      {% else %}
+      - Brak danych
+      {% endif %}
+
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state: available
+    card:
+      type: markdown
+      title: Jutro - podsumowanie
+      content: |
+        {% set stats = state_attr('sensor.plan_cen_jutro', 'total_price_statistics') or {} %}
+        {% set cheapest = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') or [] %}
+        {% set expensive = state_attr('sensor.plan_cen_jutro', 'most_expensive_hours') or [] %}
+
+        **Minimum:** {{ '%.2f' | format(stats.min_price | float(0)) }} zl/kWh
+        **Srednia:** {{ '%.2f' | format(stats.avg_price | float(0)) }} zl/kWh
+        **Maksimum:** {{ '%.2f' | format(stats.max_price | float(0)) }} zl/kWh
+
+        **Najtansze godziny:**
+        {% if cheapest %}
+        {% for hour in cheapest %}
+        - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+        {% endfor %}
+        {% else %}
+        - Brak danych
+        {% endif %}
+
+        **Najdrozsze godziny:**
+        {% if expensive %}
+        {% for hour in expensive %}
+        - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+        {% endfor %}
+        {% else %}
+        - Brak danych
+        {% endif %}

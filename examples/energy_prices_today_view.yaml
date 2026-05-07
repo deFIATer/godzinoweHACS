@@ -28,7 +28,7 @@ cards:
         header:
           show: true
           title: Ceny energii - dzisiaj
-          show_states: true
+          show_states: false
         graph_span: 24h
         span:
           start: day
@@ -124,15 +124,30 @@ cards:
                 });
 
       - type: markdown
-        title: Godziny dzisiaj
+        title: Dzisiaj - podsumowanie
         content: |
-          **Tanie godziny:** {{ state_attr('sensor.plan_cen_dzis', 'cheap_hours') | join(', ') }}
+          {% set stats = state_attr('sensor.plan_cen_dzis', 'total_price_statistics') or {} %}
+          {% set cheapest = state_attr('sensor.plan_cen_dzis', 'cheapest_hours') or [] %}
+          {% set expensive = state_attr('sensor.plan_cen_dzis', 'most_expensive_hours') or [] %}
 
-          **Drogie godziny:** {{ state_attr('sensor.plan_cen_dzis', 'expensive_hours') | join(', ') }}
+          **Minimum:** {{ '%.2f' | format(stats.min_price | float(0)) }} zl/kWh
+          **Srednia:** {{ '%.2f' | format(stats.avg_price | float(0)) }} zl/kWh
+          **Maksimum:** {{ '%.2f' | format(stats.max_price | float(0)) }} zl/kWh
 
-          {% set cheapest = state_attr('sensor.plan_cen_dzis', 'cheapest_hours') %}
+          **Najtansze godziny:**
           {% if cheapest %}
-          **Najtansza godzina:** {{ cheapest[0].hour }} - {{ '%.2f' | format(cheapest[0].total_price | float) }} zl/kWh
+          {% for hour in cheapest %}
+          - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+          {% endfor %}
           {% else %}
-          **Najtansza godzina:** brak danych
+          - Brak danych
+          {% endif %}
+
+          **Najdrozsze godziny:**
+          {% if expensive %}
+          {% for hour in expensive %}
+          - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+          {% endfor %}
+          {% else %}
+          - Brak danych
           {% endif %}

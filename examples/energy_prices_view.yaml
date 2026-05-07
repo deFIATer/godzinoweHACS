@@ -2,26 +2,21 @@ title: Ceny energii
 path: ceny-energii
 icon: mdi:transmission-tower
 cards:
-  - type: entities
+  - type: markdown
     title: Teraz
-    show_header_toggle: false
-    entities:
-      - entity: sensor.aktualna_cena_z_taryfa
-        name: Cena z taryfa
-      - entity: sensor.aktualna_cena_rynkowa
-        name: Cena rynkowa
-      - entity: sensor.klasyfikacja_ceny
-        name: Klasyfikacja
-      - entity: binary_sensor.energia_tania
-        name: Energia tania
-      - entity: binary_sensor.energia_droga
-        name: Energia droga
+    content: |
+      ## {{ '%.2f' | format(states('sensor.aktualna_cena_z_taryfa') | float(0)) }} zl/kWh
+
+      **Cena rynkowa:** {{ '%.2f' | format(states('sensor.aktualna_cena_rynkowa') | float(0)) }} zl/kWh
+      **Klasyfikacja:** {{ states('sensor.klasyfikacja_ceny') }}
+      **Energia tania:** {{ states('binary_sensor.energia_tania') }}
+      **Energia droga:** {{ states('binary_sensor.energia_droga') }}
 
   - type: custom:apexcharts-card
     header:
       show: true
       title: Ceny godzinowe dzisiaj
-      show_states: true
+      show_states: false
     graph_span: 24h
     span:
       start: day
@@ -85,7 +80,7 @@ cards:
     header:
       show: true
       title: Ceny godzinowe jutro
-      show_states: true
+      show_states: false
     graph_span: 24h
     span:
       start: day
@@ -144,18 +139,64 @@ cards:
             });
 
   - type: markdown
-    title: Najlepsze godziny
+    title: Dzisiaj - podsumowanie
     content: |
-      **Dzis tanie godziny:**
-      {{ state_attr('sensor.plan_cen_dzis', 'cheap_hours') | join(', ') }}
+      {% set stats = state_attr('sensor.plan_cen_dzis', 'total_price_statistics') or {} %}
+      {% set cheapest = state_attr('sensor.plan_cen_dzis', 'cheapest_hours') or [] %}
+      {% set expensive = state_attr('sensor.plan_cen_dzis', 'most_expensive_hours') or [] %}
 
-      **Jutro tanie godziny:**
-      {{ state_attr('sensor.plan_cen_jutro', 'cheap_hours') | join(', ') }}
+      **Minimum:** {{ '%.2f' | format(stats.min_price | float(0)) }} zl/kWh
+      **Srednia:** {{ '%.2f' | format(stats.avg_price | float(0)) }} zl/kWh
+      **Maksimum:** {{ '%.2f' | format(stats.max_price | float(0)) }} zl/kWh
 
-      **Najtansza jutro:**
-      {% set h = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') %}
-      {% if h %}
-      {{ h[0].hour }} - {{ '%.2f' | format(h[0].total_price | float) }} zl/kWh
+      **Najtansze godziny:**
+      {% if cheapest %}
+      {% for hour in cheapest %}
+      - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+      {% endfor %}
       {% else %}
-      Brak danych
+      - Brak danych
       {% endif %}
+
+      **Najdrozsze godziny:**
+      {% if expensive %}
+      {% for hour in expensive %}
+      - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+      {% endfor %}
+      {% else %}
+      - Brak danych
+      {% endif %}
+
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state: available
+    card:
+      type: markdown
+      title: Jutro - podsumowanie
+      content: |
+        {% set stats = state_attr('sensor.plan_cen_jutro', 'total_price_statistics') or {} %}
+        {% set cheapest = state_attr('sensor.plan_cen_jutro', 'cheapest_hours') or [] %}
+        {% set expensive = state_attr('sensor.plan_cen_jutro', 'most_expensive_hours') or [] %}
+
+        **Minimum:** {{ '%.2f' | format(stats.min_price | float(0)) }} zl/kWh
+        **Srednia:** {{ '%.2f' | format(stats.avg_price | float(0)) }} zl/kWh
+        **Maksimum:** {{ '%.2f' | format(stats.max_price | float(0)) }} zl/kWh
+
+        **Najtansze godziny:**
+        {% if cheapest %}
+        {% for hour in cheapest %}
+        - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+        {% endfor %}
+        {% else %}
+        - Brak danych
+        {% endif %}
+
+        **Najdrozsze godziny:**
+        {% if expensive %}
+        {% for hour in expensive %}
+        - {{ hour.hour }} - {{ '%.2f' | format(hour.total_price | float(0)) }} zl/kWh ({{ hour.classification }})
+        {% endfor %}
+        {% else %}
+        - Brak danych
+        {% endif %}
