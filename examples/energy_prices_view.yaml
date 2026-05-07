@@ -76,67 +76,84 @@ cards:
               return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.price_per_kwh)];
             });
 
-  - type: custom:apexcharts-card
-    header:
-      show: true
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state: available
+    card:
+      type: custom:apexcharts-card
+      header:
+        show: true
+        title: Ceny godzinowe jutro
+        show_states: false
+      graph_span: 24h
+      span:
+        start: day
+        offset: +1d
+      apex_config:
+        chart:
+          height: 320
+        plotOptions:
+          bar:
+            columnWidth: 75%
+        tooltip:
+          "y":
+            formatter: |
+              EVAL:function(value) {
+                return Number(value).toFixed(2) + " zl/kWh";
+              }
+        yaxis:
+          decimalsInFloat: 2
+          labels:
+            formatter: |
+              EVAL:function(value) {
+                return Number(value).toFixed(2);
+              }
+          title:
+            text: zl/kWh
+        xaxis:
+          labels:
+            datetimeUTC: false
+      series:
+        - entity: sensor.plan_cen_jutro
+          name: Cena z taryfa
+          type: column
+          color: "#9b51e0"
+          data_generator: |
+            const records = entity.attributes.records || [];
+            const date = entity.attributes.date;
+            return records
+              .filter((record) => record.total_price !== undefined && record.total_price !== null)
+              .map((record) => {
+                const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+                return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
+              });
+        - entity: sensor.plan_cen_jutro
+          name: Cena rynkowa
+          type: line
+          color: "#f2994a"
+          stroke_width: 3
+          data_generator: |
+            const records = entity.attributes.records || [];
+            const date = entity.attributes.date;
+            return records
+              .filter((record) => record.price_per_kwh !== undefined && record.price_per_kwh !== null)
+              .map((record) => {
+                const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
+                return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.price_per_kwh)];
+              });
+
+  - type: conditional
+    conditions:
+      - entity: sensor.plan_cen_jutro
+        state_not: available
+    card:
+      type: markdown
       title: Ceny godzinowe jutro
-      show_states: false
-    graph_span: 24h
-    span:
-      start: day
-      offset: +1d
-    apex_config:
-      chart:
-        height: 320
-      plotOptions:
-        bar:
-          columnWidth: 75%
-      tooltip:
-        "y":
-          formatter: |
-            EVAL:function(value) {
-              return Number(value).toFixed(2) + " zl/kWh";
-            }
-      yaxis:
-        decimalsInFloat: 2
-        labels:
-          formatter: |
-            EVAL:function(value) {
-              return Number(value).toFixed(2);
-            }
-        title:
-          text: zl/kWh
-      xaxis:
-        labels:
-          datetimeUTC: false
-    series:
-      - entity: sensor.plan_cen_jutro
-        name: Cena z taryfa
-        type: column
-        color: "#9b51e0"
-        data_generator: |
-          const records = entity.attributes.records || [];
-          const date = entity.attributes.date;
-          return records
-            .filter((record) => record.total_price !== undefined && record.total_price !== null)
-            .map((record) => {
-              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
-              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.total_price)];
-            });
-      - entity: sensor.plan_cen_jutro
-        name: Cena rynkowa
-        type: line
-        color: "#f2994a"
-        stroke_width: 3
-        data_generator: |
-          const records = entity.attributes.records || [];
-          const date = entity.attributes.date;
-          return records
-            .filter((record) => record.price_per_kwh !== undefined && record.price_per_kwh !== null)
-            .map((record) => {
-              const hour = String(record.hour || "00-01").split("-")[0].padStart(2, "0");
-              return [new Date(`${date}T${hour}:00:00`).getTime(), Number(record.price_per_kwh)];
-            });
+      content: |
+        Dane na jutro nie sa jeszcze dostepne.
+
+        Poczekaj do godziny **12:00** - wtedy powinny sie pojawic.
 
   - type: markdown
     title: Dzisiaj - podsumowanie
