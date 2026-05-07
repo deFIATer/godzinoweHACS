@@ -2,7 +2,6 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge)](https://github.com/hacs/integration)
 ![GitHub Release](https://img.shields.io/github/v/release/deFIATer/godzinoweHACS?style=for-the-badge)
-[![hacs_downloads](https://img.shields.io/github/downloads/deFIATer/godzinoweHACS/latest/total?style=for-the-badge)](https://github.com/deFIATer/godzinoweHACS/releases/latest)
 [![GitHub License](https://img.shields.io/github/license/deFIATer/godzinoweHACS?style=for-the-badge)](LICENSE)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/deFIATer/godzinoweHACS?style=for-the-badge)
 ![Maintenance](https://img.shields.io/maintenance/yes/2026?style=for-the-badge)
