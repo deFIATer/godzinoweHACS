@@ -1,26 +1,44 @@
 # godzinowe.pl - Integracja Home Assistant
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge)](https://github.com/hacs/integration)
+![GitHub Release](https://img.shields.io/github/v/release/deFIATer/godzinoweHACS?style=for-the-badge)
+[![hacs_downloads](https://img.shields.io/github/downloads/deFIATer/godzinoweHACS/latest/total?style=for-the-badge)](https://github.com/deFIATer/godzinoweHACS/releases/latest)
+[![GitHub License](https://img.shields.io/github/license/deFIATer/godzinoweHACS?style=for-the-badge)](LICENSE)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/deFIATer/godzinoweHACS?style=for-the-badge)
+![Maintenance](https://img.shields.io/maintenance/yes/2026?style=for-the-badge)
+
 Integracja Home Assistant dla godzinowych cen energii z API godzinowe.pl.
 
 API zwraca czyste ceny rynkowe TGE w `zł/kWh`. Integracja potrafi dodatkowo doliczyć Twoje własne składniki: VAT/mnożnik ceny rynkowej, dystrybucję G11/G12/G12w/G13 oraz stałą dopłatę `zł/kWh` na opłaty jakościowe, OZE, kogeneracyjne, marżę sprzedawcy itp.
 
 ## 🚀 Instalacja
 
-### Przez HACS (Zalecane)
+[![Otwórz HACS i dodaj repozytorium](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=deFIATer&repository=godzinoweHACS&category=integration)
 
-1. Otwórz HACS w Home Assistant
-2. Przejdź do "Integrations"
-3. Kliknij "Explore & Download Repositories"
-4. Wyszukaj "godzinowe.pl"
-5. Zainstaluj integrację
-6. Zrestartuj Home Assistant
-7. Dodaj integrację przez Configuration > Integrations
+### HACS (zalecane)
+
+1. Otwórz HACS w Home Assistant.
+2. Dodaj repozytorium przyciskiem powyżej albo ręcznie jako custom repository:
+   - Repository: `deFIATer/godzinoweHACS`
+   - Category: `Integration`
+3. Wyszukaj **godzinowe.pl**.
+4. Pobierz integrację.
+5. Zrestartuj Home Assistant.
 
 ### Ręczna instalacja
 
-1. Skopiuj folder `custom_components/godzinowe_pl` do katalogu `custom_components/` w Home Assistant
-2. Zrestartuj Home Assistant
-3. Dodaj integrację przez Configuration > Integrations
+1. Skopiuj folder `custom_components/godzinowe_pl` do katalogu `custom_components` w Home Assistant.
+2. Zrestartuj Home Assistant.
+
+### Pierwsza konfiguracja
+
+[![Dodaj integrację](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=godzinowe_pl)
+
+1. Otwórz **Ustawienia** → **Urządzenia i usługi**.
+2. Kliknij **Dodaj integrację**.
+3. Wyszukaj **godzinowe.pl**.
+4. Dodaj integrację i zapisz konfigurację.
+5. Opcje taryfowe możesz później zmienić w ustawieniach integracji.
 
 ## ⚙️ Konfiguracja
 
